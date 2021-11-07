@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using Keyboard = Game.Control.Keyboard;
 
@@ -26,6 +27,7 @@ namespace Game
 		
 		void MainFormLoad(object sender, EventArgs e)
 		{
+            ThreadPool.SetMinThreads(400, 4);
 			this.StartPosition = FormStartPosition.Manual;
 			this.Location = Cursor.Position;
 			Keyboard.InterceptKeys.OnProcessStart();

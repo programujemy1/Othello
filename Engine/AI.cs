@@ -19,7 +19,14 @@ namespace Engine
 			if(!BoardHelper.isGameFinished(board)) {
 				if(BoardHelper.hasAnyMoves(board,mark)) {
 					Console.WriteLine("thinking...");
-					Point aiPlayPoint = Minimax.solve(board, mark, depth);
+					Point aiPlayPoint;
+					/* 
+ 						* solveUsingParallel > solveUsingThreads > solveUsingTasks > solveNoMultiThreading
+ 					*/
+ 					aiPlayPoint = Minimax.solveUsingParallel(board, mark, depth); // FASTEST
+					//aiPlayPoint = Minimax.solveUsingThreads(board, mark, depth); //
+					//aiPlayPoint = Minimax.solveUsingTasks(board, mark, depth); //
+					//aiPlayPoint = Minimax.solveNoMultiThreading(board, mark, depth); // SLOWEST
 					int i = aiPlayPoint.X;
 					int j = aiPlayPoint.Y;
 					if(BoardHelper.canPlay(board,mark,i,j)) {

@@ -1,100 +1,21 @@
-﻿using System;
-using System.Drawing;
-using System.Threading.Tasks;
+﻿/*
+ * Created by SharpDevelop.
+ * User: Marcin
+ * Date: 2021-11-05
+ * Time: 20:51
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+using System;
 
 namespace Engine
 {
 	/// <summary>
-	/// Description of MinMaxTask.
+	/// Description of Evaluator.
 	/// </summary>
-	public class MinMaxTask
+	public class Evaluator
 	{
-		public int _score;
-		public string _id;
-		public bool _ready;
-		
-		int[,] _node;
-		int _player;
-		int _depth;
-		bool _max;
-		int _alpha;
-		int _beta;
-		
-		public MinMaxTask(string id){
-			this._ready = true;
-			this._id = id;
-		}
-		
-		public void New(int[,] node, int player, int depth, bool max, int alpha, int beta){
-			this._ready = false;
-			this._score = int.MinValue;
-			this._node = node;
-			this._player = player;
-			this._depth = depth;
-			this._max = max;
-			this._alpha = alpha;
-			this._beta = beta;
-		}
-		
-		public void StartTask(){
-			Console.WriteLine("task id " + this._id + " started");
-			Task.Run(
-				() => {
-					this._score = MMAB(this._node, this._player, this._depth, this._max, this._alpha, this._beta);
-					this._ready = true;
-				}
-			);
-		}
-		
-		public void StartThread(){
-			Console.WriteLine("thread id " + this._id + " started");
-			this._score = MMAB(this._node, this._player, this._depth, this._max, this._alpha, this._beta);
-		}
-		
-		//returns minimax value for a given node with A/B pruning
-		int MMAB(int[,] node,int player,int depth,bool max,int alpha,int beta){
-			//if terminal reached or depth limit reached evaluate
-			if(depth == 0 || BoardHelper.isGameFinished(node)){
-				//BoardPrinter bpe = new BoardPrinter(node,"Depth : " + depth);
-				return eval(node,player);
-			}
-			int oplayer = (player==1) ? 2 : 1;
-			//if no moves available then forfeit turn
-			if((max && !BoardHelper.hasAnyMoves(node,player)) || (!max && !BoardHelper.hasAnyMoves(node,oplayer))){
-				//System.out.println("Forfeit State Reached !");
-				return MMAB(node,player,depth-1,!max,alpha,beta);
-			}
-			int score;
-			if(max){
-				//maximizing
-				score = int.MinValue;
-				foreach(Point move in BoardHelper.getAllPossibleMoves(node,player)){ //my turn
-					//create new node
-					int[,] newNode = BoardHelper.getNewBoardAfterMove(node,move,player);
-					//recursive call
-					int childScore = MMAB(newNode,player,depth-1,false,alpha,beta);
-					if(childScore > score) score = childScore;
-					//update alpha
-					if(score > alpha) alpha = score;
-					if(beta <= alpha) break; //Beta Cutoff
-				}
-			}else{
-				//minimizing
-				score = int.MaxValue;
-				foreach(Point move in BoardHelper.getAllPossibleMoves(node,oplayer)){ //opponent turn
-					//create new node
-					int[,] newNode = BoardHelper.getNewBoardAfterMove(node,move,oplayer);
-					//recursive call
-					int childScore = MMAB(newNode,player,depth-1,true,alpha,beta);
-					if(childScore < score) score = childScore;
-					//update beta
-					if(score < beta) beta = score;
-					if(beta <= alpha) break; //Alpha Cutoff
-				}
-			}
-			return score;
-		}
-		
+		//Evaluation Function Changes during Early-Game / Mid-Game / Late-Game
 		enum GamePhase {
 			EARLY_GAME,
 			MID_GAME,
@@ -209,7 +130,7 @@ namespace Engine
 			return remDiscs % 2 == 0 ? -1 : 1;
 		}
 		
-		int eval(int[,] board , int player){
+		public int eval(int[,] board , int player){
 			
 			//terminal
 			if(BoardHelper.isGameFinished(board)){

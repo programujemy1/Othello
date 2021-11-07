@@ -45,7 +45,7 @@ namespace Engine
 		
 		public void Add(MinMaxTask t){
 			var tcopy = t;
-			_threads.Add(new Thread(() => tcopy.Start()));
+			_threads.Add(new Thread(tcopy.StartThread));
 		}
 		
 		public void Start()
