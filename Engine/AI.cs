@@ -10,17 +10,16 @@ namespace Engine
 	{
 		public int mark;
 		public int depth;
-		Evaluator evaluator;
 		
 		public AI() {
-			evaluator = new Evaluator();
+			Minimax.init();
 		}
 		
 		public Tuple<int, Point> play(int[,] board) {
 			if(!BoardHelper.isGameFinished(board)) {
 				if(BoardHelper.hasAnyMoves(board,mark)) {
 					Console.WriteLine("thinking...");
-					Point aiPlayPoint = Minimax.solve(board, mark, depth, evaluator);
+					Point aiPlayPoint = Minimax.solve(board, mark, depth);
 					int i = aiPlayPoint.X;
 					int j = aiPlayPoint.Y;
 					if(BoardHelper.canPlay(board,mark,i,j)) {
